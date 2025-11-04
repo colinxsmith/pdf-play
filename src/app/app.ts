@@ -5,6 +5,7 @@ import { PdfGen } from "./pdf-gen/pdf-gen";
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet, PdfGen],
   templateUrl: './app.html',
   styleUrl: './app.scss'

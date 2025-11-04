@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+import "../../assets/fonts/SourceHanSans-normal.js";
+import "../../assets/fonts/SourceHanSans-bold.js";
+
 @Component({
   selector: 'app-pdf-gen',
   imports: [],
@@ -11,28 +14,8 @@ import autoTable from "jspdf-autotable";
 export class PdfGen {
   async generatePDF() {
     const doc = new jsPDF();
-    //The following is supposed to handle Japanese fonts, but it's not working yet.
-  /*  const fontPath = 'assets/fonts/ms-pgothic-regular.ttf';
-    const fontResponse = await fetch(fontPath);
-    const fontData = await fontResponse.arrayBuffer();
-
-       // Convert ArrayBuffer to base64
-    function arrayBufferToBase64(buffer: ArrayBuffer): string {
-      let binary = '';
-      const bytes = new Uint8Array(buffer);
-      const len = bytes.byteLength;
-      for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      return window.btoa(binary);
-    }
-    const fontBase64 = arrayBufferToBase64(fontData);
-
-    doc.addFileToVFS("ms-pgothic-regular.ttf", fontBase64);
-    doc.addFont("ms-pgothic-regular.ttf", "ms pgothic", "normal");
-
-    // Set the font for Japanese text
-    doc.setFont("ms pgothic", "normal");*/
+    
+  doc.setFont('SourceHanSans');
     doc.setFontSize(16);
     doc.text("My Angular PDF Generator", 10, 10);
     doc.setFontSize(12);
@@ -46,6 +29,14 @@ export class PdfGen {
       head: headers,
       body: data,
       startY: 30,
+      styles: {
+      font: 'SourceHanSans',
+      fontStyle: 'normal',
+      overflow: 'linebreak', // Enable text wrapping
+    },
+    headStyles: {
+      fontStyle: 'bold',
+    },
     });
     doc.save("table.pdf");
   }

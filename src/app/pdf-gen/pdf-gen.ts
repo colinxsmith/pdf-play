@@ -1,4 +1,4 @@
-import { Component, ElementRef ,OnInit} from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as d3 from 'd3';
@@ -14,30 +14,37 @@ import "../../assets/fonts/SourceHanSans-bold.js";
   styleUrl: './pdf-gen.scss',
 })
 export class PdfGen implements OnInit {
-  constructor(private element: ElementRef) {   }
-  ngOnInit(): void {
-    const svg = d3.select(this.element.nativeElement).select('svg')
-    setTimeout(() => {
-    const arc = d3.arc()
-      .innerRadius(0)
-      .outerRadius(50)
-      .startAngle(Math.PI * 0.25)
-      .endAngle(Math.PI * 1.75);
-    console.log(arc);
-      svg.select('path')
-        .attr('d', arc as any)
-        .attr('transform', 'translate(100,100)')
-        .style('fill', '#2196F3')
-        .style('stroke', '#1f19d2ff')
-        .style('stroke-width', '2');
-    }, 0);
+  constructor(private element: ElementRef) { }
+  //  @ViewChild('svg',{static:false}) element: ElementRef=new ElementRef(null);
+  arc = d3.arc()({
+    innerRadius: 0,
+    outerRadius: 50,
+    startAngle: Math.PI * 0.25,
+    endAngle: Math.PI * 1.75
+  })
+  updateSvg() {
+    const svg = d3.select(this.element.nativeElement).select('svg');
+    console.log(this.arc);
+    svg.select('path')
+      .attr('d', this.arc)
+      .attr('transform', 'translate(100,100)')
+      .style('fill', '#2196F3')
+      .style('stroke', '#1f19d2ff')
+      .style('stroke-width', '2');
     svg.select('text')
-        .style('font-size','x-large')
-        .style('font-style','oblique')
-        .style('font-weight','bold')
-        .text('New text ');
+      .attr('y', 125)
+      .style('font-size', 'x-large')
+      .style('font-style', 'oblique')
+      .style('font-weight', 'bold')
+      .text('New text ');
+  }
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.updateSvg();
+    }, 500);
   }
   async generatePDF() {
+    this.updateSvg();
     const doc = new jsPDF();
 
     doc.setFont('SourceHanSans');

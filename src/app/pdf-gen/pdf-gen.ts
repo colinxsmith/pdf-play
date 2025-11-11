@@ -1,7 +1,8 @@
-import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as d3 from 'd3';
+import * as d3_save_pdf from 'd3-save-pdf';
 
 
 import "../../assets/fonts/SourceHanSans-normal.js";
@@ -15,7 +16,6 @@ import "../../assets/fonts/SourceHanSans-bold.js";
 })
 export class PdfGen implements OnInit {
   constructor(private element: ElementRef) { }
-  //  @ViewChild('svg',{static:false}) element: ElementRef=new ElementRef(null);
   arc = d3.arc()({
     innerRadius: 0,
     outerRadius: 50,
@@ -43,33 +43,40 @@ export class PdfGen implements OnInit {
       this.updateSvg();
     }, 500);
   }
-  async generatePDF() {
-    this.updateSvg();
-    const doc = new jsPDF();
 
-    doc.setFont('SourceHanSans');
-    doc.setFontSize(16);
-    doc.text("My Angular PDF Generator", 10, 10);
-    doc.setFontSize(12);
-    doc.text("This is a comprehensive guide on generating PDFs with Angular.", 10, 20);
-    const headers = [["Name", "Email", "Country"]];
-    const data = [
-      ["Colin Smith", "colin.smith@corfinancialgroup.com", "England"],
-      ["スミス晶子", "akiko.smith@gmail.com", "Japan"],
-    ];
-    autoTable(doc, {
-      head: headers,
-      body: data,
-      startY: 30,
-      styles: {
-        font: 'SourceHanSans',
-        fontStyle: 'normal',
-        overflow: 'linebreak', // Enable text wrapping
-      },
-      headStyles: {
-        fontStyle: 'bold',
-      },
-    });
-    doc.save("table.pdf");
+  newpfd() {
+    const svgElement = d3.select('svg').node() as SVGElement;
+    if (svgElement) {
+      d3_save_pdf.save(svgElement, { filename: 'my-chart.svg' });
+    }
   }
-}
+ /* async generatePDF() {
+      this.updateSvg();
+      const doc = new jsPDF();
+
+      doc.setFont('SourceHanSans');
+      doc.setFontSize(16);
+      doc.text("My Angular PDF Generator", 10, 10);
+      doc.setFontSize(12);
+      doc.text("This is a comprehensive guide on generating PDFs with Angular.", 10, 20);
+      const headers = [["Name", "Email", "Country"]];
+      const data = [
+        ["Colin Smith", "colin.smith@corfinancialgroup.com", "England"],
+        ["スミス晶子", "akiko.smith@gmail.com", "Japan"],
+      ];
+      autoTable(doc, {
+        head: headers,
+        body: data,
+        startY: 30,
+        styles: {
+          font: 'SourceHanSans',
+          fontStyle: 'normal',
+          overflow: 'linebreak', // Enable text wrapping
+        },
+        headStyles: {
+          fontStyle: 'bold',
+        },
+      });
+      doc.save("table.pdf");
+    }*/
+  }

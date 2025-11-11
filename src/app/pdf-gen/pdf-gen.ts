@@ -45,10 +45,10 @@ export class PdfGen implements OnInit {
   }
 
   newpfd() {
-    const svgElement = d3.select('svg').node() as SVGElement;
-    if (svgElement) {
-      d3_save_pdf.save(svgElement, { filename: 'my-chart.svg' });
-    }
+  var config = {
+    filename: 'customFileName',
+  }
+  d3_save_pdf.save(d3.select('svg').node() as SVGAElement, config);
   }
  /* async generatePDF() {
       this.updateSvg();

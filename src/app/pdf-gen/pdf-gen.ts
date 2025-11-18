@@ -57,7 +57,7 @@ export class PdfGen implements OnInit {
   translatehack = (x = 0, y = 0) => `translate(${x},${y})`;
   pics = [0, 1, 2, 3, 4, 5, 6, 7] as Array<number>
   rotc=(a:number)=>a*Math.cos(Math.PI/4);
-  rots=(a:number)=>a*Math.sinh(Math.PI/4);
+  rots=(a:number)=>a*Math.sin(Math.PI/4);
   newpfd() {
     console.log('generating pdf');
     var config = {

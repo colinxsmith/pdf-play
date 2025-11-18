@@ -1,10 +1,13 @@
 <div>
   <button class="button" (click)="newpfd()">Generate PDF</button>
-  <svg width="200" height="200">
-    <rect width="200" height="200" fill="blue" stroke-width="3" stroke="rgb(0,0,0)"></rect>
-    <circle cx="100" cy="100" r="80" stroke="black" stroke-width="2" fill="red"></circle>
-    <path [attr.d]="arc" fill="yellow" stroke="purple" stroke-width="5"
-      fill-rule="evenodd"></path>
-    <text x="60" y="100" fill="black">Text here!</text>
+  <svg width="2000" height="200">
+    @for (i of pics;track $index){
+    <g [attr.transform]="translatehack(i * 250, 0)">
+      <rect width="200" height="200" fill="blue" stroke-width="3" stroke="rgb(0,0,0)"></rect>
+      <circle cx="100" cy="100" r="80" stroke="black" stroke-width="2" fill="red"></circle>
+      <path [attr.d]="arc" fill="yellow" stroke="purple" stroke-width="5" fill-rule="evenodd"></path>
+      <text x="60" y="100" fill="black">Text here</text>
+    </g>
+    }
   </svg>
 </div>

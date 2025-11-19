@@ -33,19 +33,19 @@ export class PdfGen implements OnInit {
         .style('stroke-width', '2')
         .transition()
         .duration(1000)
-        .attrTween('transform',()=>(t:number)=>`translate(${100*t},${100*t}) rotate(${t*360+i*45})`);
+        .attrTween('transform', () => (t: number) => `translate(${100 * t},${100 * t}) rotate(${t * 360 + i * 45})`);
     })
-    svg.selectAll('text').nodes().forEach((d: d3.BaseType,i) => {
+    svg.selectAll('text').nodes().forEach((d: d3.BaseType, i) => {
       d3.select(d)
-        .text('New text ')
+        .text('New text in ts file')
         .style('font-size', 'x-large')
         .style('font-style', 'oblique')
         .style('font-weight', 'bold')
-        .attr('x', 0  )
-        .attr('y', 0  )
+        .attr('x', 20)
+        .attr('y', 100)
         .transition()
-        .duration(1000)
-        .attrTween('transform',()=>(t:number)=>`translate(${60+this.rotc(i)},${100+this.rots(i)})rotate(${t*360+i*45})`);
+        .duration(10000)
+        .attrTween('transform', () => (t: number) => `translate(${0}, ${50}) rotate(${t * 360 + i * 45})`);
     })
   }
   ngOnInit(): void {
@@ -56,8 +56,8 @@ export class PdfGen implements OnInit {
 
   translatehack = (x = 0, y = 0) => `translate(${x},${y})`;
   pics = [0, 1, 2, 3, 4, 5, 6, 7] as Array<number>
-  rotc=(a:number)=>a*Math.cos(Math.PI/4);
-  rots=(a:number)=>a*Math.sin(Math.PI/4);
+  rotc = (a: number) => a * Math.cos(Math.PI / 4);
+  rots = (a: number) => a * Math.sin(Math.PI / 4);
   newpfd() {
     console.log('generating pdf');
     var config = {

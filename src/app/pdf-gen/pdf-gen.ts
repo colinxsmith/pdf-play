@@ -25,12 +25,13 @@ export class PdfGen implements OnInit {
   updateSvg() {
     const svg = d3.select(this.element.nativeElement).select('svg');
     console.log(svg);
-    svg.selectAll('g.innerg').nodes().forEach((d: d3.BaseType, i) => {
+    svg.selectAll('g.innerg').nodes().forEach((d: d3.BaseType, i,kk:Array<d3.BaseType>) => {
       d3.select(d).select('path')
         .attr('d', this.arc)
         .style('fill', '#2196F3')
         .style('stroke', '#1f19d2ff')
-        .style('stroke-width', '2')
+        .style('stroke-width', '5')
+        .style('fill', this.colours(i))
         .transition()
         .duration(1000)
         .attrTween('transform', () => (t: number) => `rotate(${-5 * 360 * t})`);
@@ -39,10 +40,11 @@ export class PdfGen implements OnInit {
         .style('font-size', 'x-large')
         .style('font-style', 'oblique')
         .style('font-weight', 'bold')
+        .style('fill', this.colours(kk.length-i-1))
         .transition()
         .duration(1000)
-        .attrTween('x', () => (t: number) => `${20 - 100 * t}`)
-        .attrTween('y', () => (t: number) => `${100 - 100 * t}`);
+        .attrTween('x', () => (t: number) => `${15 - 100 * t}`)
+        .attrTween('y', () => (t: number) => `${104 - 100 * t}`);
     });
     d3.selectAll('g.innerg').nodes().forEach((d: d3.BaseType, i) => {
       d3.select(d)
@@ -60,7 +62,8 @@ export class PdfGen implements OnInit {
   }
 
   translatehack = (x = 0, y = 0) => `translate(${x},${y})`;
-  pics = [0, 1, 2, 3, 4, 5, 6, 7] as Array<number>
+  pics = [0, 1, 2, 3, 4, 5, 6] as Array<number>
+  colours=d3.scaleLinear<string>().range(['yellow', 'magenta']).domain([0, this.pics.length - 1]);
   newpfd() {
     console.log('generating pdf');
     var config = {

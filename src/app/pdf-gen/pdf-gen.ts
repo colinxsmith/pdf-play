@@ -1,12 +1,7 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import * as d3 from 'd3';
-import * as d3_save_pdf from 'd3-save-pdf';
-
-
-import "../../assets/fonts/SourceHanSans-normal.js";
-import "../../assets/fonts/SourceHanSans-bold.js";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-pdf-gen',
@@ -25,7 +20,7 @@ export class PdfGen implements OnInit {
   updateSvg() {
     const svg = d3.select(this.element.nativeElement).select('svg');
     console.log(svg);
-    svg.selectAll('g.innerg').nodes().forEach((d: any, i,kk:Array<any>) => {
+    (svg.selectAll('g.innerg').nodes() as Array<SVGElement>).forEach((d, i, kk) => {
       console.log(d);
       d3.select(d).select('path')
         .attr('d', this.arc)
@@ -37,17 +32,17 @@ export class PdfGen implements OnInit {
         .duration(1000)
         .attrTween('transform', () => (t: number) => `rotate(${-5 * 360 * t})`);
       d3.select(d).select('text')
-        .text('New text in ts file')
+        .text('スミス晶子 in ts file')
         .style('font-size', 'x-large')
         .style('font-style', 'oblique')
         .style('font-weight', 'bold')
-        .style('fill', this.colours(kk.length-i-1))
+        .style('fill', this.colours(kk.length - i - 1))
         .transition()
         .duration(1000)
-        .attrTween('x', () => (t: number) => `${15 - 100 * t}`)
-        .attrTween('y', () => (t: number) => `${104 - 100 * t}`);
+        .attrTween('x', () => (t: number) => `${-2 - 100 * t}`)
+        .attrTween('y', () => (t: number) => `${112 - 100 * t}`);
     });
-    d3.selectAll('g.innerg').nodes().forEach((d: d3.BaseType, i) => {
+    (svg.selectAll('g.innerg').nodes() as Array<SVGElement>).forEach((d, i) => {
       d3.select(d)
         //  .attr('transform', `translate(100,100)`)
         .transition()
@@ -64,98 +59,54 @@ export class PdfGen implements OnInit {
 
   translatehack = (x = 0, y = 0) => `translate(${x},${y})`;
   pics = [0, 1, 2, 3, 4, 5, 6] as Array<number>
-  colours=d3.scaleLinear<string>().range(['yellow', 'magenta']).domain([0, this.pics.length - 1]);
- async newpfd(): Promise<void> {
-    const marginMM = 10;            // page margin in mm
-    const targetDPI = 150;         // choose 96 (screen), 150, 300 (print quality)
+  colours = d3.scaleLinear<string>().range(['yellow', 'magenta']).domain([0, this.pics.length - 1]);
+
+  async newpfd(): Promise<void> {
+    const marginMM = 10;
+    const targetDPI = 300;
     try {
-      const doc = new jsPDF();     // default unit is 'mm' unless changed
-      const svgEl = d3.select(this.element.nativeElement).select('svg').node() as SVGSVGElement;
-      if (!svgEl) throw new Error('No SVG found');
+      // Get the entire div element
+      const divElement = d3.select(this.element.nativeElement).select('div.ourpage').node() as HTMLDivElement | null;
+      if (!divElement) throw new Error('No .ourpage div found');
 
-      // compute SVG source width/height (prefer viewBox, fallback to attributes)
-      let svgW = svgEl.viewBox.baseVal && svgEl.viewBox.baseVal.width ? svgEl.viewBox.baseVal.width : 0;
-      let svgH = svgEl.viewBox.baseVal && svgEl.viewBox.baseVal.height ? svgEl.viewBox.baseVal.height : 0;
-      if (!svgW || !svgH) {
-        const attrW = svgEl.getAttribute('width');
-        const attrH = svgEl.getAttribute('height');
-        svgW = svgW || (attrW ? parseFloat(attrW.toString()) : 800);
-        svgH = svgH || (attrH ? parseFloat(attrH.toString()) : 600);
-      }
+      // Capture div as canvas
+      const canvas = await html2canvas(divElement, {
+        scale: targetDPI / 96, // convert DPI to scale factor
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+      });
 
-      // desired PDF image size in mm
+      // Get canvas dimensions
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const aspect = imgHeight / imgWidth;
+
+      // Create PDF with appropriate size
+      const doc = new jsPDF();
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
       const desiredW_MM = pageW - marginMM * 2;
-      const aspect = svgH / svgW;
-      const desiredH_MM = Math.min(desiredW_MM * aspect, pageH - marginMM * 2);
+      const desiredH_MM = desiredW_MM * aspect;
 
-      // convert mm -> px for the canvas using DPI (px = dpi * inches; inches = mm / 25.4)
-      const mmToPx = (mm: number) => Math.round((mm / 25.4) * targetDPI);
-      // compute pixel size that preserves SVG aspect ratio
-      const canvasPxW = mmToPx(desiredW_MM);
-      const canvasPxH = Math.round(canvasPxW * aspect);
+      // Convert canvas to image and add to PDF
+      const imgData = canvas.toDataURL('image/png');
+      doc.addImage(imgData, 'PNG', marginMM, marginMM, desiredW_MM, desiredH_MM);
 
-      // serialize and base64 encode safely (handles unicode)
-      const svgString = new XMLSerializer().serializeToString(svgEl);
-      const svgBase64 = window.btoa(unescape(encodeURIComponent(svgString)));
-      const img = new Image();
-      img.onload = () => {
-        // draw into sized canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = canvasPxW;
-        canvas.height = canvasPxH;
-        const ctx = canvas.getContext('2d')!;
-        // optional: clear and set background if needed
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      // If content is taller than one page, add additional pages
+      let heightLeft = desiredH_MM - (pageH - marginMM * 2);
+      let position = pageH - marginMM;
+      while (heightLeft > 0) {
+        doc.addPage();
+        doc.addImage(imgData, 'PNG', marginMM, position, desiredW_MM, desiredH_MM);
+        heightLeft -= (pageH - marginMM * 2);
+        position = pageH - marginMM;
+      }
 
-        // get PNG data URL
-        const imgData = canvas.toDataURL('image/png');
-
-        // add to PDF: x, y and width/height in mm
-        const xMM = marginMM;
-        const yMM = marginMM;
-        doc.addImage(imgData, 'PNG', xMM, yMM, desiredW_MM, desiredH_MM);
-
-        // optional: add text or tables below image
-        // doc.text('Generated', xMM, yMM + desiredH_MM + 10);
-
-        doc.save('svg-export.pdf');
-      };
-      img.onerror = (e) => { throw new Error('SVG image load failed'); };
-      img.src = `data:image/svg+xml;base64,${svgBase64}`;
-    } catch (err) {
-      console.error('Error generating PDF:', err);
+      doc.save('pdf-play.pdf');
+      console.log('PDF generated successfully');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     }
   }
-  /* async generatePDF() {
-       this.updateSvg();
-       const doc = new jsPDF();
- 
-       doc.setFont('SourceHanSans');
-       doc.setFontSize(16);
-       doc.text("My Angular PDF Generator", 10, 10);
-       doc.setFontSize(12);
-       doc.text("This is a comprehensive guide on generating PDFs with Angular.", 10, 20);
-       const headers = [["Name", "Email", "Country"]];
-       const data = [
-         ["Colin Smith", "colin.smith@corfinancialgroup.com", "England"],
-         ["スミス晶子", "akiko.smith@gmail.com", "Japan"],
-       ];
-       autoTable(doc, {
-         head: headers,
-         body: data,
-         startY: 30,
-         styles: {
-           font: 'SourceHanSans',
-           fontStyle: 'normal',
-           overflow: 'linebreak', // Enable text wrapping
-         },
-         headStyles: {
-           fontStyle: 'bold',
-         },
-       });
-       doc.save("table.pdf");
-     }*/
 }

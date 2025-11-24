@@ -25,7 +25,8 @@ export class PdfGen implements OnInit {
   updateSvg() {
     const svg = d3.select(this.element.nativeElement).select('svg');
     console.log(svg);
-    svg.selectAll('g.innerg').nodes().forEach((d: d3.BaseType, i,kk:Array<d3.BaseType>) => {
+    svg.selectAll('g.innerg').nodes().forEach((d: any, i,kk:Array<any>) => {
+      console.log(d);
       d3.select(d).select('path')
         .attr('d', this.arc)
         .style('fill', '#2196F3')
@@ -64,24 +65,69 @@ export class PdfGen implements OnInit {
   translatehack = (x = 0, y = 0) => `translate(${x},${y})`;
   pics = [0, 1, 2, 3, 4, 5, 6] as Array<number>
   colours=d3.scaleLinear<string>().range(['yellow', 'magenta']).domain([0, this.pics.length - 1]);
-  newpfd() {
-    console.log('generating pdf');
-    var config = {
-      filename: 'customFileName',
-    }
-    d3_save_pdf.embedRasterImages(d3.select('svg').node() as SVGAElement);
-    d3_save_pdf.save(d3.select('svg').node() as SVGAElement, config);
+ async newpfd(): Promise<void> {
+    const marginMM = 10;            // page margin in mm
+    const targetDPI = 150;         // choose 96 (screen), 150, 300 (print quality)
+    try {
+      const doc = new jsPDF();     // default unit is 'mm' unless changed
+      const svgEl = d3.select(this.element.nativeElement).select('svg').node() as SVGSVGElement;
+      if (!svgEl) throw new Error('No SVG found');
 
-    /* const doc = new jsPDF();
-   
-     // Capture the SVG from the DOM
-     const svgElement = d3.select(this.element.nativeElement).select('svg');
-     const svgString = new XMLSerializer().serializeToString(svgElement.node() as Node);
-     const base64 = btoa(svgString);
-     
-     // Add SVG image to PDF
-     doc.addImage(`data:image/svg+xml;base64,${base64}`, 'SVG', 10, 10, 190, 100);
-     doc.save("svg.pdf");*/
+      // compute SVG source width/height (prefer viewBox, fallback to attributes)
+      let svgW = svgEl.viewBox.baseVal && svgEl.viewBox.baseVal.width ? svgEl.viewBox.baseVal.width : 0;
+      let svgH = svgEl.viewBox.baseVal && svgEl.viewBox.baseVal.height ? svgEl.viewBox.baseVal.height : 0;
+      if (!svgW || !svgH) {
+        const attrW = svgEl.getAttribute('width');
+        const attrH = svgEl.getAttribute('height');
+        svgW = svgW || (attrW ? parseFloat(attrW.toString()) : 800);
+        svgH = svgH || (attrH ? parseFloat(attrH.toString()) : 600);
+      }
+
+      // desired PDF image size in mm
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const desiredW_MM = pageW - marginMM * 2;
+      const aspect = svgH / svgW;
+      const desiredH_MM = Math.min(desiredW_MM * aspect, pageH - marginMM * 2);
+
+      // convert mm -> px for the canvas using DPI (px = dpi * inches; inches = mm / 25.4)
+      const mmToPx = (mm: number) => Math.round((mm / 25.4) * targetDPI);
+      // compute pixel size that preserves SVG aspect ratio
+      const canvasPxW = mmToPx(desiredW_MM);
+      const canvasPxH = Math.round(canvasPxW * aspect);
+
+      // serialize and base64 encode safely (handles unicode)
+      const svgString = new XMLSerializer().serializeToString(svgEl);
+      const svgBase64 = window.btoa(unescape(encodeURIComponent(svgString)));
+      const img = new Image();
+      img.onload = () => {
+        // draw into sized canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = canvasPxW;
+        canvas.height = canvasPxH;
+        const ctx = canvas.getContext('2d')!;
+        // optional: clear and set background if needed
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // get PNG data URL
+        const imgData = canvas.toDataURL('image/png');
+
+        // add to PDF: x, y and width/height in mm
+        const xMM = marginMM;
+        const yMM = marginMM;
+        doc.addImage(imgData, 'PNG', xMM, yMM, desiredW_MM, desiredH_MM);
+
+        // optional: add text or tables below image
+        // doc.text('Generated', xMM, yMM + desiredH_MM + 10);
+
+        doc.save('svg-export.pdf');
+      };
+      img.onerror = (e) => { throw new Error('SVG image load failed'); };
+      img.src = `data:image/svg+xml;base64,${svgBase64}`;
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+    }
   }
   /* async generatePDF() {
        this.updateSvg();

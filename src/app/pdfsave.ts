@@ -7,7 +7,7 @@ import jsPDF from 'jspdf';
   providedIn: 'root'
 })
 export class PdfSave {
-  async exportToPdf(element: HTMLElement, filename: string = 'export.pdf', marginMM: number = 10, targetDPI: number = 300): Promise<void> {
+  async exportToPdf(element: HTMLElement | null, filename: string = 'export.pdf', marginMM: number = 10, targetDPI: number = 300): Promise<void> {
     try {
       if (!element) throw new Error('No element provided');
 

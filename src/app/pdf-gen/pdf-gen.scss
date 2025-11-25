@@ -1,6 +1,10 @@
 .button {
     color: darkorange;
     font-size: 40px;
+    padding: 16px 30px;
+    margin: 4px 2px;
+    border: 3px solid red;
+    border-radius: 10px;
 }
 
 .g.innerg text {
@@ -16,4 +20,9 @@ h1.wife {
     font-weight: bold;
     font-size: 48px;
     background-color: burlywood;
+}
+.extent{
+    stroke:darkkhaki;
+    fill:none;
+    stroke-width: 1;
 }

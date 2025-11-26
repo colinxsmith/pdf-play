@@ -1,13 +1,12 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import * as d3 from 'd3';
-import { PdfSave } from '../pdfsave';
-
+import { PdfSave } from '../../services/pdfsave';
 
 @Component({
   selector: 'app-pdf-gen',
-  imports: [],
+  standalone: true, // Add this line to make PdfGen a standalone component
   templateUrl: './pdf-gen.html',
-  styleUrl: './pdf-gen.scss',
+  styleUrls: ['./pdf-gen.scss'], // Correct property name
 })
 export class PdfGen implements OnInit {
   constructor(private element: ElementRef, private pdfsave: PdfSave) { }
@@ -18,7 +17,8 @@ export class PdfGen implements OnInit {
     endAngle: Math.PI * 1.75
   })
   updateSvg() {
-    const svg = d3.select(this.element.nativeElement).select('svg') as d3.Selection<SVGElement, unknown, null, undefined>;
+    // Use correct SVG type for d3 selection
+    const svg = d3.select(this.element.nativeElement).select('svg') as d3.Selection<SVGSVGElement, unknown, null, undefined>;
     (svg.selectAll('g.innerg').nodes() as Array<SVGElement>).forEach((d, i, kk) => {
       console.log(d);
       d3.select(d).select('path')
@@ -55,10 +55,11 @@ export class PdfGen implements OnInit {
   }
 
   translatehack = (x = 0, y = 0) => `translate(${x},${y})`;
-  pics = [0, 1, 2, 3, 4, 5, 6,7] as Array<number>
+  pics = [0, 1, 2, 3, 4, 5, 6, 7] as Array<number>;
+  // Use d3.scaleLinear for color interpolation, but output type should be string
   colours = d3.scaleLinear<string>().range(['yellow', 'magenta']).domain([0, this.pics.length - 1]);
 
-  async newpfd(): Promise<void> {
+  async newpdf(): Promise<void> { // Fix typo in method name
     try {
       const divElement = d3.select(this.element.nativeElement).select('div.ourpage').node() as HTMLDivElement | null;
       await this.pdfsave.exportToPdf(divElement, 'pdf-play.pdf', 10, 300);

@@ -8,7 +8,7 @@ import { PdfGen } from "./pdf-gen/pdf-gen";
   standalone: true,
   imports: [RouterOutlet, PdfGen],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrls: ['./app.scss']
 })
 export class App {
   protected title = 'pdf-play';

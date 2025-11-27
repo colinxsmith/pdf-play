@@ -11,7 +11,7 @@
         <text x="60" y="125" fill="black">Text here</text>
       </g>
     </g>
-    }
+  }
   </svg>
   <h1 class="wife">Even other fonts (スミス晶子 my wife) with no extra font loading effort in jsPDF.</h1>
   <p style="font-size: 45px;color:red;text-align:justify;">Sometimes animation does not kick in directly when running
@@ -23,3 +23,4 @@
 <div style="text-align: end;">
 <button class="button" (click)="newpdf()">Generate PDF file</button>
 </div>
+<app-pdvprint [divelement]="printSelector" pdfname="testpdfprint.pdf"></app-pdvprint>

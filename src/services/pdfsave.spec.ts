@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Pdfsave } from './pdfsave';
+import { PdfSave } from './pdfsave';
 
-describe('Pdfsave', () => {
-  let service: Pdfsave;
+describe('PdfSave', () => {
+  let service: PdfSave;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Pdfsave);
+    service = TestBed.inject(PdfSave);
   });
 
   it('should be created', () => {

@@ -1,12 +1,15 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import * as d3 from 'd3';
 import { PdfSave } from '../../services/pdfsave';
+import { Pdvprint } from "../pdvprint/pdvprint";
 
 @Component({
   selector: 'app-pdf-gen',
   standalone: true, // Add this line to make PdfGen a standalone component
   templateUrl: './pdf-gen.html',
-  styleUrls: ['./pdf-gen.scss'], // Correct property name
+  styleUrls: ['./pdf-gen.scss'],
+  imports: [CommonModule, Pdvprint], // include CommonModule for *ngFor
 })
 export class PdfGen implements OnInit {
   constructor(private element: ElementRef, private pdfsave: PdfSave) { }
@@ -27,7 +30,7 @@ export class PdfGen implements OnInit {
         .style('fill', this.colours(i))
         .transition()
         .duration(175)
-        .styleTween('stroke-width', ()=>(t: number) => `${12 * t}`)
+        .styleTween('stroke-width', () => (t: number) => `${12 * t}`)
         .attrTween('transform', () => (t: number) => `rotate(${-5 * 360 * t})`);
       d3.select(d).select('text')
         .text('スミス晶子 in ts file')
@@ -46,16 +49,22 @@ export class PdfGen implements OnInit {
         .duration(175)
         .attrTween('transform', () => (t: number) => `translate(${125 * t},${125 * t}) rotate(${45 * i + 5 * 360 * t})`);
     });
+    this.printSelector = d3.select(this.element.nativeElement).select('div.ourpage').node() as HTMLDivElement | null;
   }
 
   ngOnInit(): void {
     setTimeout(() => {
+      let count = 0
+      while (this.printSelector === null && count++ < 10) {
+        this.printSelector = d3.select(this.element.nativeElement).select('div.ourpage').node() as HTMLDivElement | null;
+      }
       this.updateSvg();
     }, 5);
   }
 
   translatehack = (x = 0, y = 0) => `translate(${x},${y})`;
   pics = [0, 1, 2, 3, 4, 5, 6, 7] as Array<number>;
+  printSelector: HTMLDivElement | null = null;
   // Use d3.scaleLinear for color interpolation, but output type should be string
   colours = d3.scaleLinear<string>().range(['yellow', 'magenta']).domain([0, this.pics.length - 1]);
 

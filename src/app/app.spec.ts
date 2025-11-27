@@ -18,6 +18,6 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, pdf-play');
+    expect(compiled.querySelector('h1')?.textContent).toContain('PDF Generation Demo (this is outside the area which goes to pdf)');
   });
 });

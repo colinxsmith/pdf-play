@@ -1,0 +1,13 @@
+.button {
+    color: darkorange;
+    background-color: lightgreen;
+    font-size: 40px;
+    padding: 16px 30px;
+    margin: 4px 2px;
+    border: 3px solid red;
+    border-radius: 10px;
+}
+.button:hover {
+    background-color: lightyellow;
+    cursor: pointer;
+}   

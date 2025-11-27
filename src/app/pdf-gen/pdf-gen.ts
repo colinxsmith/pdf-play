@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import * as d3 from 'd3';
-import{ Pdvprint } from "../pdvprint/pdvprint";
+import { Pdvprint } from "../pdvprint/pdvprint";
 
 @Component({
   selector: 'app-pdf-gen',
@@ -52,10 +52,6 @@ export class PdfGen implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      let count = 0
-      while (this.printSelector === null && count++ < 10) {
-        this.printSelector = d3.select(this.element.nativeElement).select('div.ourpage').node() as HTMLDivElement | null;
-      }
       this.updateSvg();
     }, 5);
   }

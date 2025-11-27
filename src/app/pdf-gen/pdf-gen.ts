@@ -1,18 +1,16 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import * as d3 from 'd3';
-import { PdfSave } from '../../services/pdfsave';
-import { Pdvprint } from "../pdvprint/pdvprint";
+import{ Pdvprint } from "../pdvprint/pdvprint";
 
 @Component({
   selector: 'app-pdf-gen',
   standalone: true, // Add this line to make PdfGen a standalone component
   templateUrl: './pdf-gen.html',
   styleUrls: ['./pdf-gen.scss'],
-  imports: [CommonModule, Pdvprint], // include CommonModule for *ngFor
+  imports: [Pdvprint]
 })
 export class PdfGen implements OnInit {
-  constructor(private element: ElementRef, private pdfsave: PdfSave) { }
+  constructor(private element: ElementRef) { }
   arc = d3.arc()({
     innerRadius: 0,
     outerRadius: 50,
@@ -68,12 +66,5 @@ export class PdfGen implements OnInit {
   // Use d3.scaleLinear for color interpolation, but output type should be string
   colours = d3.scaleLinear<string>().range(['yellow', 'magenta']).domain([0, this.pics.length - 1]);
 
-  async newpdf(): Promise<void> { // Fix typo in method name
-    try {
-      const divElement = d3.select(this.element.nativeElement).select('div.ourpage').node() as HTMLDivElement | null;
-      await this.pdfsave.exportToPdf(divElement, 'pdf-play.pdf', 10, 300);
-    } catch (error) {
-      console.error('PDF export failed:', error);
-    }
-  }
+
 }

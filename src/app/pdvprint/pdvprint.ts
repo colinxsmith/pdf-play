@@ -11,6 +11,7 @@ import { PdfSave } from '../../services/pdfsave';
 export class Pdvprint {
   @Input() divelement: HTMLDivElement | null = null;
   @Input() pdfname: string = 'document.pdf';
+  @Input() buttontext: string = 'Export to PDF';
   constructor(private pdfsave: PdfSave, private element: ElementRef) { }
   async newpdf(): Promise<void> { 
     try {

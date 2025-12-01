@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PdfSave } from '../../services/pdfsave';
+import { PdfSave } from './pdfsave';
 
 
 @Component({

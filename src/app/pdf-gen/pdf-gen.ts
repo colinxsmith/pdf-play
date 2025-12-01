@@ -1,13 +1,13 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import * as d3 from 'd3';
-import { Pdvprint } from "../pdvprint/pdvprint";
+import { pdfprint } from "../pdfprint/pdfprint";
 
 @Component({
   selector: 'app-pdf-gen',
   standalone: true, // Add this line to make PdfGen a standalone component
   templateUrl: './pdf-gen.html',
   styleUrls: ['./pdf-gen.scss'],
-  imports: [Pdvprint]
+  imports: [pdfprint]
 })
 export class PdfGen implements OnInit {
   constructor(private element: ElementRef) { }

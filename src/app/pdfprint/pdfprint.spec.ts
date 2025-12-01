@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Pdvprint } from './pdvprint';
+import { pdfprint } from './pdfprint';
 
-describe('Pdvprint', () => {
-  let component: Pdvprint;
-  let fixture: ComponentFixture<Pdvprint>;
+describe('pdfprint', () => {
+  let component: pdfprint;
+  let fixture: ComponentFixture<pdfprint>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Pdvprint]
+      imports: [pdfprint]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Pdvprint);
+    fixture = TestBed.createComponent(pdfprint);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, viewChild, effect, Injector } from '@angular/core';
 import * as d3 from 'd3';
 import { pdfprint } from "../../services/pdfprint/pdfprint";
 
@@ -9,14 +9,26 @@ import { pdfprint } from "../../services/pdfprint/pdfprint";
   styleUrls: ['./pdf-gen.scss'],
   imports: [pdfprint]
 })
-export class PdfGen implements OnInit {
-  constructor(private element: ElementRef) { }
+export class PdfGen {
+  private svgRef = viewChild<ElementRef<SVGElement>>('div.ourpage');
+  constructor(private element: ElementRef, private injector: Injector) {
+    effect(() => {
+      const svgElement = this.svgRef();
+      // const needsUpdate = this.needsUpdate(); // Read the other signal if needed
+
+      if (svgElement) {
+        // The element is guaranteed to be in the DOM now
+        this.updateSvg();
+      }
+    }, { injector: this.injector });
+  }
   arc = d3.arc()({
     innerRadius: 0,
     outerRadius: 50,
     startAngle: Math.PI * 0.25,
     endAngle: Math.PI * 1.75
   })
+  textArea="";
   updateSvg() {
     // Use correct SVG type for d3 selection
     const svg = d3.select(this.element.nativeElement).select('svg') as d3.Selection<SVGSVGElement, unknown, null, undefined>;

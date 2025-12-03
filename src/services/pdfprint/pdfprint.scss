@@ -1,6 +1,6 @@
 .button {
     color: darkorange;
-    background-color: lightgreen;
+    background-image: url("/assets/new1.ico");
     font-size: 40px;
     padding: 16px 30px;
     margin: 4px 2px;
@@ -8,6 +8,6 @@
     border-radius: 10px;
 }
 .button:hover {
-    background-color: lightyellow;
+    background-image: url("/assets/ak.ico");
     cursor: pointer;
 }   

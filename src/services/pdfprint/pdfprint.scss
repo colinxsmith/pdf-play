@@ -1,6 +1,7 @@
 .button {
     color: darkorange;
     background-image: url("/assets/new1.ico");
+/*    background-image: url("/pdf-play/assets/new1.ico");*/ // for build
     font-size: 40px;
     padding: 16px 30px;
     margin: 4px 2px;
@@ -9,5 +10,6 @@
 }
 .button:hover {
     background-image: url("/assets/ak.ico");
+ /*   background-image: url("/pdf-play/assets/ak.ico");*/
     cursor: pointer;
 }   

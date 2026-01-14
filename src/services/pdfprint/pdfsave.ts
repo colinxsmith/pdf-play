@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import * as d3 from 'd3';
 
 
 @Injectable({
@@ -10,7 +11,17 @@ export class PdfSave {
   async exportToPdf(element: HTMLElement | null, filename: string = 'export.pdf', marginMM: number = 10, targetDPI: number = 300): Promise<void> {
     try {
       if (!element) throw new Error('No element provided');
-
+      /*    const svgs=element.querySelectorAll('svg');
+          svgs.forEach((svg) => {
+            const width = svg.getAttribute('width');
+            const height = svg.getAttribute('height');
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`); //Not using d3
+          })*/
+      d3.select(element).selectAll('svg').call((svg) => {
+        const width = svg.attr('width');
+        const height = svg.attr('height');
+        svg.attr('viewBox', `0 0 ${width} ${height}`);
+      })
       // Capture element as canvas
       const canvas = await html2canvas(element, {
         scale: targetDPI / 96,
